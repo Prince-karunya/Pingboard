@@ -2,6 +2,12 @@
 body { background: var(--bg); }
 
 .topbar { background: var(--navy); height: 56px; position: sticky; top: 0; z-index: 10; }
+.app-loading-track { height: 3px; position: fixed; z-index: 11; top: 56px; left: 0; right: 0; overflow: hidden; background: #dce8f6; }
+.app-loading-track::after { content: ''; display: block; width: 35%; height: 100%; background: var(--primary); animation: loading-sweep 1.2s ease-in-out infinite; }
+.loading-indicator { display: flex; align-items: center; gap: 8px; padding: 12px; color: #5b6573; font-size: .9rem; }
+.loading-indicator[role="status"] { min-height: 24px; }
+.loading-indicator.justify-content-center { min-height: 100vh; }
+@keyframes loading-sweep { from { transform: translateX(-100%); } to { transform: translateX(300%); } }
 .sidebar { width: 230px; min-height: calc(100vh - 56px); background: #fff; border-right: 1px solid #e3e8ef; flex-shrink: 0; }
 .sidebar a { display: block; padding: 10px 12px; border-radius: 8px; color: #333; text-decoration: none; margin-bottom: 2px; }
 .sidebar a:hover, .sidebar a.active { background: #eaf1fa; color: var(--primary); }
@@ -35,4 +41,8 @@ body { background: var(--bg); }
   .sidebar { display: none; }
   .content { padding-bottom: 80px !important; }
   .cal-cell { min-height: 56px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-loading-track::after { width: 100%; animation: none; opacity: .6; }
 }

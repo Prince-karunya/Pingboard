@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { MCA_COHORTS, MCA_DEPARTMENT } from '../../utils/mcaCohorts';
 import { parseCsv } from '../../utils/csv';
+import LoadingIndicator from '../../components/LoadingIndicator';
 
 const emptyForm = {
   name: '', email: '', password: '', rollNo: '', cohort: 'AMCA',
@@ -16,13 +17,19 @@ export default function Students() {
   const [courseId, setCourseId] = useState('');
   const [message, setMessage] = useState('');
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [studentsLoading, setStudentsLoading] = useState(true);
   const hodCourses = data.courses.filter((course) =>
     [course.department, course.programCode].some((value) =>
       String(value || '').trim().toLowerCase() === String(user.department || '').trim().toLowerCase()));
 
   async function refreshStudents() {
-    const result = await getHodStudents();
-    if (result) setStudents(result);
+    setStudentsLoading(true);
+    try {
+      const result = await getHodStudents();
+      if (result) setStudents(result);
+    } finally {
+      setStudentsLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -249,6 +256,7 @@ export default function Students() {
         <label className="form-label small mt-3 mb-1" htmlFor="student-csv">Student account CSV</label>
         <input id="student-csv" type="file" accept=".csv,text/csv" className="form-control"
           disabled={bulkBusy} onChange={importStudents} />
+        {bulkBusy && <LoadingIndicator label="Validating CSV and creating student accounts..." />}
         <small className="text-warning mt-2">The CSV contains temporary passwords. Store it securely and delete it after upload.</small>
       </section>
 
@@ -277,6 +285,7 @@ export default function Students() {
         <table className="table bg-white align-middle">
           <thead><tr><th>Name</th><th>Email</th><th>Roll number</th><th>Department</th><th>Year</th><th>Section</th><th>Status</th><th></th></tr></thead>
           <tbody>
+            {studentsLoading && <tr><td colSpan="8"><LoadingIndicator label="Loading student accounts..." centered /></td></tr>}
             {visibleStudents.map((student) => (
               <tr key={student.user_id}>
                 <td>{student.name}</td>
@@ -296,7 +305,7 @@ export default function Students() {
                 </td>
               </tr>
             ))}
-            {visibleStudents.length === 0 && <tr><td colSpan="8" className="text-center text-muted">No students found for this department and filter.</td></tr>}
+            {!studentsLoading && visibleStudents.length === 0 && <tr><td colSpan="8" className="text-center text-muted">No students found for this department and filter.</td></tr>}
           </tbody>
         </table>
       </div>

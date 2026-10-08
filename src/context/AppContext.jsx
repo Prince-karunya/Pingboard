@@ -171,6 +171,7 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
+  const [pendingRequests, setPendingRequests] = useState(0);
 
   async function refreshSession(session) {
     if (!session) {
@@ -244,6 +245,7 @@ export function AppProvider({ children }) {
   }, [user?.id]);
 
   async function run(action) {
+    setPendingRequests((count) => count + 1);
     try {
       const result = await action();
       setError('');
@@ -252,6 +254,8 @@ export function AppProvider({ children }) {
       console.error('PingBoard request failed:', actionError);
       setError(userFacingError(actionError));
       return null;
+    } finally {
+      setPendingRequests((count) => Math.max(0, count - 1));
     }
   }
 
@@ -263,22 +267,17 @@ export function AppProvider({ children }) {
 
   async function login(username, password, role) {
     setError('');
-    if (role === 'student') {
-      return run(async () => {
+    return run(async () => {
+      if (role === 'student') {
         const result = unwrap(await supabase.functions.invoke('student-login', {
           body: { rollNo: username.trim(), password },
         }));
         await finishLogin(result.session);
         return true;
-      });
-    }
-    const result = await supabase.auth.signInWithPassword({ email: username.trim(), password });
-    if (result.error) {
-      console.error('PingBoard sign-in failed:', result.error);
-      setError(userFacingError(result.error));
-      return null;
-    }
-    return run(async () => {
+      }
+
+      const result = await supabase.auth.signInWithPassword({ email: username.trim(), password });
+      if (result.error) throw result.error;
       const signedInUser = await refreshSession(result.data.session);
       if (signedInUser.role !== role) {
         await supabase.auth.signOut();
@@ -289,16 +288,13 @@ export function AppProvider({ children }) {
   }
 
   async function logout() {
-    const result = await supabase.auth.signOut();
-    if (result.error) {
-      console.error('PingBoard sign-out failed:', result.error);
-      setError(userFacingError(result.error));
-      return false;
-    }
-    setUser(null);
-    setData(emptyData());
-    setError('');
-    return true;
+    return run(async () => {
+      const result = await supabase.auth.signOut();
+      if (result.error) throw result.error;
+      setUser(null);
+      setData(emptyData());
+      return true;
+    });
   }
 
   async function updateUser(id, changes) {
@@ -620,7 +616,7 @@ export function AppProvider({ children }) {
   }
 
   const value = {
-    data, user, ready, error, setError, isHod: Boolean(user?.isHod),
+    data, user, ready, error, setError, pendingRequests, isHod: Boolean(user?.isHod),
     login, logout, updateUser, removeUser, addUsers, changePassword,
     getHodStudents, manageStudents,
     createNotice, getNoticeImageUrl, deleteNotice, togglePin, markRead, acknowledge,

@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useApp } from './context/AppContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import LoadingIndicator from './components/LoadingIndicator';
 import Login from './pages/Login';
 import NoticeDetail from './pages/NoticeDetail';
 import Profile from './pages/Profile';
@@ -29,7 +30,7 @@ import Reports from './pages/admin/Reports';
 
 function Home() {
   const { user, ready } = useApp();
-  if (!ready) return <div className="p-4 text-center">Connecting to PingBoard…</div>;
+  if (!ready) return <LoadingIndicator label="Connecting to PingBoard..." centered />;
   if (!user) return <Navigate to="/login" replace />;
   const target = { student: '/student/dashboard', faculty: '/faculty/dashboard', admin: '/admin/dashboard' };
   return <Navigate to={target[user.role]} replace />;

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import LoadingIndicator from '../components/LoadingIndicator';
 
 export default function Login() {
   const {
-    user, login, ready,
+    user, login, ready, pendingRequests,
     error: backendError, setError: clearBackendError,
   } = useApp();
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function Login() {
   const [error, setError] = useState('');
 
   if (user) return <Navigate to="/" replace />;
-  if (!ready) return <div className="p-4 text-center">Connecting to PingBoard…</div>;
+  if (!ready) return <LoadingIndicator label="Connecting to PingBoard..." centered />;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -98,7 +99,11 @@ export default function Login() {
             <i className={`bi ${showPassword ? 'bi-eye-slash' : 'bi-eye'}`} aria-hidden="true"></i>
           </button>
         </div>
-        <button className="btn btn-primary w-100">Login</button>
+        <button className="btn btn-primary w-100" disabled={pendingRequests > 0}>
+          {pendingRequests > 0
+            ? <><span className="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Signing in...</>
+            : 'Login'}
+        </button>
         {role === 'student' && <p className="small text-muted text-center mt-3 mb-0">
           Student Accounts are provided by Head Of Department.
         </p>}

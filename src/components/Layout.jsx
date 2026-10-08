@@ -32,7 +32,7 @@ const menus = {
 };
 
 export default function Layout() {
-  const { user, data, logout, error, setError } = useApp();
+  const { user, data, logout, error, setError, pendingRequests } = useApp();
   const navigate = useNavigate();
   const links = user.role === 'faculty' && user.isHod
     ? [...menus.faculty.slice(0, 1), { to: '/faculty/students', label: 'Department Students', icon: 'bi-people' }, ...menus.faculty.slice(1)]
@@ -69,6 +69,11 @@ export default function Layout() {
           <button className="btn btn-sm btn-outline-light" onClick={handleLogout}>Logout</button>
         </div>
       </nav>
+      {pendingRequests > 0 && (
+        <div className="app-loading-track" role="progressbar" aria-label="Loading">
+          <span className="visually-hidden">Working...</span>
+        </div>
+      )}
 
       <div className="d-flex">
         <aside className="sidebar p-3" aria-label="Main navigation">
