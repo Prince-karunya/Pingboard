@@ -1,0 +1,38 @@
+:root { --primary: #2E6FBA; --navy: #1F3A5F; --bg: #F5F7FA; }
+body { background: var(--bg); }
+
+.topbar { background: var(--navy); height: 56px; position: sticky; top: 0; z-index: 10; }
+.sidebar { width: 230px; min-height: calc(100vh - 56px); background: #fff; border-right: 1px solid #e3e8ef; flex-shrink: 0; }
+.sidebar a { display: block; padding: 10px 12px; border-radius: 8px; color: #333; text-decoration: none; margin-bottom: 2px; }
+.sidebar a:hover, .sidebar a.active { background: #eaf1fa; color: var(--primary); }
+.content { min-width: 0; }
+
+.notice-card { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 12px;
+  border-left: 5px solid var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+.notice-card.urgent { border-left-color: #DC3545; }
+.notice-card.important { border-left-color: #FD7E14; }
+.notice-card.unread { background: #f0f6ff; }
+
+.bar-track { background: #e9eef5; border-radius: 6px; height: 12px; overflow: hidden; }
+.bar-fill { background: var(--primary); height: 100%; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-head { text-align: center; font-weight: 600; font-size: 13px; color: #666; }
+.cal-cell { background: #fff; border: 1px solid #e3e8ef; border-radius: 8px; min-height: 80px; padding: 4px; font-size: 12px; }
+.cal-cell.today { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.cal-event { background: #eaf1fa; color: var(--navy); border-radius: 4px; padding: 1px 4px; margin-top: 2px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; text-decoration: none; }
+
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid #e3e8ef;
+  display: flex; overflow-x: auto; overscroll-behavior-x: contain; padding: 6px 4px; z-index: 10; }
+.bottom-nav a { color: #555; text-decoration: none; text-align: center; font-size: 11px; flex: 0 0 76px;
+  white-space: nowrap; padding: 0 4px; }
+.bottom-nav a i { display: block; font-size: 20px; }
+.bottom-nav a.active { color: var(--primary); }
+.bottom-nav a:focus-visible, .sidebar a:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+@media (max-width: 767px) {
+  .sidebar { display: none; }
+  .content { padding-bottom: 80px !important; }
+  .cal-cell { min-height: 56px; }
+}

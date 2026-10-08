@@ -1,0 +1,10 @@
+project_id = "pingboard"
+
+[functions.manage-users]
+verify_jwt = true
+
+[functions.manage-students]
+verify_jwt = false
+
+[functions.student-login]
+verify_jwt = false
