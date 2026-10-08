@@ -48,6 +48,10 @@ PingBoard is a React/Vite college portal backed by Supabase Auth, Postgres, and 
    Once signed in as an administrator, manage faculty and HOD permissions from **Faculty**, and assign faculty to courses from **Courses**. HODs manage student accounts and department rosters from **Department Students**.
 6. Start the app with `npm run dev`.
 
+## Vercel deployment
+
+Deploy the project root as a Vite application. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` in the Vercel project environment variables. The included `vercel.json` rewrites client-side routes to the app entry point so pages continue to load when opened directly or refreshed.
+
 ## Account and feature model
 
 - PingBoard is configured for the MCA department only. The two cohorts are AMCA (Year 1) and NMCA (Year 2); cohort selection sets the year and section automatically.
